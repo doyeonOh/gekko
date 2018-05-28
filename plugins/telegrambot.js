@@ -23,9 +23,7 @@ const Actor = function() {
     '/price': 'emitPrice',
     '/help': 'emitHelp'
   };
-  if (telegrambot.donate) {
-    this.commands['/donate'] = 'emitDonate';
-  }
+  
   this.rawCommands = _.keys(this.commands);
   this.chatId = null;
   this.subscribers = [];
@@ -45,8 +43,48 @@ Actor.prototype.processAdvice = function(advice) {
   this.advice = advice.recommendation;
   this.adviceTime = utc();
   this.advicePrice = this.price;
-  this.subscribers.forEach(this.emitAdvice, this);
+
+  for(let subscriber of this.subscribers) {
+    this.emitAdvice(subscriber);
+  }
+  // this.subscribers.forEach(this.emitAdvice, this);
 };
+
+Actor.prototype.processTrade = function(trade) {
+  for(let subscriber of this.subscribers) {
+    this.emitTrade(subscriber, trade);
+  }
+}
+
+Actor.prototype.emitTrade = function(chatId, trade) {
+  let message = '';
+  
+  if (trade) {
+    const tradeDate = new Date(trade.date);
+    const dateString = tradeDate.getFullYear() + '-' + (tradeDate.getMonth() + 1) + '-' + tradeDate.getDate() + ' ' 
+      + tradeDate.getHours() + ':' + tradeDate.getMinutes() + ':' + tradeDate.getSeconds();
+  
+    message += 
+      '시간: ' + dateString + '\n' + 
+      '거래소: ', config.watch.exchange, ' ', config.watch.currency, '/', config.watch.asset, '\n',
+      '전략: ', config.tradingAdvisor.method, '\n',
+      '액션: ' + trade.action.toUpperCase() + '\n' +
+      '거래가격: ' + trade.price + ' ' + config.watch.asset  + '\n' +
+      (trade.action === 'buy' ? ('변동성 조절: ' + `${trade.percent} %`)  + '\n' : '') + 
+      '거래 후 자산: ' + trade.portfolio.asset + ' ' + config.watch.asset + '\n' +
+      '거래 후 통화: ' + trade.portfolio.currency + ' ' + config.watch.currency + '\n' +
+      '잔액: 약' + Math.round(trade.portfolio.asset * trade.price + trade.portfolio.currency) + ' ' + config.watch.currency + '\n';
+  } else {
+    message += '없음'
+  }
+
+  if (chatId) {
+    this.bot.sendMessage(chatId, message);
+  } else {
+    this.bot.sendMessage(this.chatId, message);
+  }
+}
+
 
 Actor.prototype.verifyQuestion = function(msg, text) {
   this.chatId = msg.chat.id;
@@ -67,6 +105,7 @@ Actor.prototype.emitSubscribe = function() {
     this.bot.sendMessage(this.chatId, `Success! Got ${this.subscribers.length} subscribers.`);
   } else {
     this.bot.sendMessage(this.chatId, "You are already subscribed.");
+    console.log(this.subscribers);
   }
 };
 
@@ -81,33 +120,22 @@ Actor.prototype.emitUnSubscribe = function() {
 
 Actor.prototype.emitAdvice = function(chatId) {
   let message = [
-    'Advice for ',
-    config.watch.exchange,
-    ' ',
-    config.watch.currency,
-    '/',
-    config.watch.asset,
-    ' using ',
-    config.tradingAdvisor.method,
-    ' at ',
-    config.tradingAdvisor.candleSize,
-    ' minute candles, is:\n',
+    '거래소: ', config.watch.exchange, '\n', 
+    '통화: ', config.watch.currency, '/', config.watch.asset, '\n',
+    '전략: ', config.tradingAdvisor.method, '\n',
+    '캔들사이즈: ', config.tradingAdvisor.candleSize, '분\n',
   ].join('');
   if (this.advice) {
-    message += this.advice +
-      ' ' +
-      config.watch.asset +
-      ' ' +
-      this.advicePrice +
-      ' (' +
-      this.adviceTime.fromNow() +
-      ')';
+    message += 
+      '거래: ' + this.advice + '\n' +
+      '거래가격: ' + this.advicePrice + config.watch.asset + '\n' +
+      '시간: ' + this.adviceTime.fromNow();
   } else {
-    message += 'None'
+    message += '없음'
   }
 
   if (chatId) {
-    this.bot.sendMessage(chatId, message);
+    // this.bot.sendMessage(chatId, message);
   } else {
     this.bot.sendMessage(this.chatId, message);
   }
