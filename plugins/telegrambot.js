@@ -58,14 +58,15 @@ Actor.prototype.processTrade = function(trade) {
   this.tradeTime = utc();
 
   for(let subscriber of this.subscribers) {
-    this.emitTrade(subscriber, trade);
+    this.emitTrade(subscriber);
   }
 }
 
-Actor.prototype.emitTrade = function(chatId, trade) {
+Actor.prototype.emitTrade = function(chatId) {
   let message = '';
   
-  if (trade) {
+  if (this.trade) {
+    const trade = this.trade;
     const tradeDate = new Date(trade.date);
     const dateString = tradeDate.getFullYear() + '-' + (tradeDate.getMonth() + 1) + '-' + tradeDate.getDate() + ' ' 
       + tradeDate.getHours() + ':' + tradeDate.getMinutes() + ':' + tradeDate.getSeconds();
