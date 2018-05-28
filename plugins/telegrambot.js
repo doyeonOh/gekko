@@ -70,7 +70,7 @@ Actor.prototype.emitTrade = function(chatId, trade) {
       '전략: ', config.tradingAdvisor.method, '\n',
       '액션: ' + trade.action.toUpperCase() + '\n' +
       '거래가격: ' + trade.price + ' ' + config.watch.asset  + '\n' +
-      (trade.action === 'buy' ? ('변동성 조절: ' + `${trade.percent} %`)  + '\n' : '') + 
+      (trade.action === 'buy' ? ('변동성 조절: ' + `${trade.percent * 100} %`)  + '\n' : '') + 
       '거래 후 자산: ' + trade.portfolio.asset + ' ' + config.watch.asset + '\n' +
       '거래 후 통화: ' + trade.portfolio.currency + ' ' + config.watch.currency + '\n' +
       '잔액: 약' + Math.round(trade.portfolio.asset * trade.price + trade.portfolio.currency) + ' ' + config.watch.currency + '\n';
