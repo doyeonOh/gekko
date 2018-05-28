@@ -29,6 +29,7 @@ PaperTrader.prototype.relayTrade = function(advice) {
   var what = advice.recommendation;
   var price = advice.candle.close;
   var at = advice.candle.start;
+  var percent = advice.percent;
 
   let action;
   if(what === 'short')
@@ -41,6 +42,7 @@ PaperTrader.prototype.relayTrade = function(advice) {
   this.emit('trade', {
     action,
     price,
+    percent,
     portfolio: _.clone(this.portfolio),
     balance: this.portfolio.currency + this.price * this.portfolio.asset,
     date: at
@@ -70,12 +72,13 @@ PaperTrader.prototype.setStartBalance = function() {
 PaperTrader.prototype.updatePosition = function(advice) {
   let what = advice.recommendation;
   let price = advice.candle.close;
+  let percent = advice.percent;
 
   // virtually trade all {currency} to {asset}
   // at the current price (minus fees)
   if(what === 'long') {
-    this.portfolio.asset += this.extractFee(this.portfolio.currency / price);
-    this.portfolio.currency = 0;
+    this.portfolio.asset += this.extractFee((this.portfolio.currency * percent) / price);
+    this.portfolio.currency = this.portfolio.currency * (1 - percent);
     this.trades++;
   }
 

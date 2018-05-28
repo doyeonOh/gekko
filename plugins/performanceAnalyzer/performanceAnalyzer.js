@@ -89,6 +89,7 @@ PerformanceAnalyzer.prototype.logRoundtripPart = function(trade) {
       date: trade.date,
       price: trade.price,
       total: trade.portfolio.currency + (trade.portfolio.asset * trade.price),
+      percent: trade.percent
     }
   } else if(trade.action === 'sell') {
     this.roundTrip.exit = {
@@ -112,6 +113,7 @@ PerformanceAnalyzer.prototype.handleRoundtrip = function() {
     entryAt: this.roundTrip.entry.date,
     entryPrice: this.roundTrip.entry.price,
     entryBalance: this.roundTrip.entry.total,
+    entryPercent: this.roundTrip.entry.percent,
 
     exitAt: this.roundTrip.exit.date,
     exitPrice: this.roundTrip.exit.price,

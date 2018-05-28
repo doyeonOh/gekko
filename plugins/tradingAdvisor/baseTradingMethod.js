@@ -4,6 +4,7 @@ var util = require('../../core/util');
 var config = util.getConfig();
 var dirs = util.dirs();
 var log = require(dirs.core + 'log');
+var cp = require(dirs.core + 'cp');
 
 var ENV = util.gekkoEnv();
 var mode = util.gekkoMode();
@@ -252,6 +253,23 @@ Base.prototype.propogateTick = function(candle) {
     return this.tick(this.deferredTicks.shift())
   }
 
+  // emit for UI
+  _.each(this.indicators, (indicator, name) => {
+    cp.indicatorResult({
+      name,
+      date: candle.start,
+      result: indicator.result
+    });
+  });
+
+  _.each(this.tulipIndicators, (indicator, name) => {
+    cp.indicatorResult({
+      name,
+      date: candle.start,
+      result: indicator.result
+    });
+  });
+
   // are we totally finished?
   var done = this.age === this.processedTicks;
   if(done && this.finishCb)
@@ -310,7 +328,7 @@ Base.prototype.addIndicator = function(name, type, parameters) {
   // some indicators need a price stream, others need full candles
 }
 
-Base.prototype.advice = function(newPosition, _candle) {
+Base.prototype.advice = function(newPosition, percent=1, _candle) {
   // ignore soft advice coming from legacy
   // strategies.
   if(!newPosition)
@@ -330,6 +348,7 @@ Base.prototype.advice = function(newPosition, _candle) {
 
   this.emit('advice', {
     recommendation: newPosition,
+    percent: percent,
     portfolio: 1,
     candle
   });

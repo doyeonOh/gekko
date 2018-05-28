@@ -19,6 +19,8 @@ class Trade{
     this.exchange = conf.exchange
     this.portfolio = conf.portfolio
     this.currency = conf.currency
+    this.percent = conf.percent
+    this.portfolio.percent = this.percent
     this.asset = conf.asset
     this.action = conf.action
     this.isActive = true
@@ -77,7 +79,7 @@ class Trade{
     let act = () => {
       var amount, price;
       if(this.action === 'BUY') {
-        amount = this.portfolio.getBalance(this.currency) / this.portfolio.ticker.ask;
+        amount = (this.portfolio.getBalance(this.currency) * this.percent) / this.portfolio.ticker.ask;
         if(amount > 0){
             price = this.portfolio.ticker.bid;
             this.buy(amount, price);
@@ -283,6 +285,7 @@ class Trade{
           price,
           portfolio: portfolio,
           balance: portfolio.balance,
+          percent: this.percent,
 
           // NOTE: within the portfolioManager
           // this is in uppercase, everywhere else

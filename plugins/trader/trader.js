@@ -39,16 +39,16 @@ Trader.prototype.processAdvice = function(advice) {
     log.info(
       'Trader',
       'Received advice to go long.',
-      'Buying ', config.trader.asset
+      'Buying ', config.trader.asset, 'Percent', advice.percent
     );
-    this.manager.trade('BUY');
+    this.manager.trade('BUY', advice.percent);
   } else if(advice.recommendation == 'short') {
     log.info(
       'Trader',
       'Received advice to go short.',
-      'Selling ', config.trader.asset
+      'Selling ', config.trader.asset, 'Percent', advice.percent
     );
-    this.manager.trade('SELL');
+    this.manager.trade('SELL', advice.percent);
   }
 }
 

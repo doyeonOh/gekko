@@ -60,10 +60,10 @@ Manager.prototype.init = function(callback) {
   ], prepare);
 }
 
-Manager.prototype.trade = function(what) {
+Manager.prototype.trade = function(what, percent) {
 
   let makeNewTrade = () => {
-    this.newTrade(what)
+    this.newTrade(what, percent)
   }
 
   // if an active trade is currently happening
@@ -80,7 +80,7 @@ Manager.prototype.trade = function(what) {
 };
 
 // instantiate a new trade object
-Manager.prototype.newTrade = function(what) {
+Manager.prototype.newTrade = function(what, percent) {
   log.debug("portfolioManager : newTrade() : creating a new Trade class to ", what, this.conf.asset, "/", this.conf.currency)
 
   // push the current (asummed to be inactive) trade to the history
@@ -94,6 +94,7 @@ Manager.prototype.newTrade = function(what) {
     currency: this.conf.currency,
     asset: this.conf.asset,
     portfolio: this.portfolio,
+    percent: percent,
     orderUpdateDelay: this.conf.orderUpdateDelay,
     keepAsset: (this.conf.keepAsset) ? this.conf.keepAsset : false
   })
