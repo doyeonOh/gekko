@@ -12,12 +12,15 @@ const Actor = function() {
   this.advice = null;
   this.adviceTime = utc();
 
+  this.trade = null;
+  this.tradeTime = utc();
+
   this.price = 'Dont know yet :(';
   this.priceTime = utc();
 
   this.commands = {
     '/start': 'emitStart',
-    '/advice': 'emitAdvice',
+    '/trade': 'emitTrade',
     '/subscribe': 'emitSubscribe',
     '/unsubscribe': 'emitUnSubscribe',
     '/price': 'emitPrice',
@@ -51,6 +54,9 @@ Actor.prototype.processAdvice = function(advice) {
 };
 
 Actor.prototype.processTrade = function(trade) {
+  this.trade = trade;
+  this.tradeTime = utc();
+
   for(let subscriber of this.subscribers) {
     this.emitTrade(subscriber, trade);
   }
@@ -63,17 +69,31 @@ Actor.prototype.emitTrade = function(chatId, trade) {
     const tradeDate = new Date(trade.date);
     const dateString = tradeDate.getFullYear() + '-' + (tradeDate.getMonth() + 1) + '-' + tradeDate.getDate() + ' ' 
       + tradeDate.getHours() + ':' + tradeDate.getMinutes() + ':' + tradeDate.getSeconds();
-  
-    message += 
-      '시간: ' + dateString + '\n' + 
-      '거래소: '+ config.watch.exchange + ' ' + config.watch.currency + '/' + config.watch.asset + '\n' +
-      '전략: ' + config.tradingAdvisor.method + '\n' +
-      '액션: ' + trade.action.toUpperCase() + '\n' +
-      '거래가격: ' + trade.price + ' ' + config.watch.asset  + '\n' +
-      (trade.action === 'buy' ? ('변동성 조절: ' + `${trade.percent * 100} %`)  + '\n' : '') + 
-      '거래 후 자산: ' + trade.portfolio.asset + ' ' + config.watch.asset + '\n' +
-      '거래 후 통화: ' + trade.portfolio.currency + ' ' + config.watch.currency + '\n' +
-      '잔액: 약' + Math.round(trade.portfolio.asset * trade.price + trade.portfolio.currency) + ' ' + config.watch.currency + '\n';
+    
+    message += `
+      ${config.watch.exchange}  ${config.watch.currency} ${config.watch.asset}
+      [전략]: ${config.tradingAdvisor.method}
+      [액션]: ${trade.action.toUpperCase()}
+      [거래가격]: ${trade.price}  ${config.watch.asset}
+      ${trade.action === 'buy' ? '[변동성 조절]: ' + (trade.percent * 100) + '%' : '' }
+      [거래 후 자산]: ${trade.portfolio.asset}  ${config.watch.asset}
+      [거래 후 통화]: ${trade.portfolio.currency}  ${config.watch.currency}
+      [잔액]: 약 ${Math.round(trade.portfolio.asset * trade.price + trade.portfolio.currency)})  ${config.watch.currency}
+      [수익률]: 약 ${Math.round(1 / trade.portfolio.balance * trade.balance * 100) / 100 * 100} %
+      [시간]: ${this.tradeTime.fromNow()}
+    `;
+    // message += 
+       
+    //   config.watch.exchange + ' ' + config.watch.currency + '/' + config.watch.asset + '\n' +
+    //   '[전략]: ' + config.tradingAdvisor.method + '\n' +
+    //   '[액션]: ' + trade.action.toUpperCase() + '\n' +
+    //   '[거래가격]: ' + trade.price + ' ' + config.watch.asset  + '\n' +
+    //   (trade.action === 'buy' ? ('[변동성 조절]: ' + `${trade.percent * 100} %`)  + '\n' : '') + 
+    //   '[거래 후 자산]: ' + trade.portfolio.asset + ' ' + config.watch.asset + '\n' +
+    //   '[거래 후 통화]: ' + trade.portfolio.currency + ' ' + config.watch.currency + '\n' +
+    //   '[잔액]: 약' + Math.round(trade.portfolio.asset * trade.price + trade.portfolio.currency) + ' ' + config.watch.currency + '\n' +
+    //   '[수익률]: 약 ' + (Math.round(1 / trade.portfolio.balance * trade.balance * 100) / 100 * 100) + ' %' + '\n' +
+    //   '[시간]: ' + this.tradeTime.fromNow();
   } else {
     message += '없음'
   }
@@ -137,27 +157,17 @@ Actor.prototype.emitAdvice = function(chatId) {
   if (chatId) {
     // this.bot.sendMessage(chatId, message);
   } else {
-    this.bot.sendMessage(this.chatId, message);
+    // this.bot.sendMessage(this.chatId, message);
   }
 };
 
 // sent price over to the last chat
 Actor.prototype.emitPrice = function() {
-  const message = [
-    'Current price at ',
-    config.watch.exchange,
-    ' ',
-    config.watch.currency,
-    '/',
-    config.watch.asset,
-    ' is ',
-    this.price,
-    ' ',
-    config.watch.currency,
-    ' (from ',
-    this.priceTime.fromNow(),
-    ')'
-  ].join('');
+  const message = `
+    ${config.watch.exchange} ${config.watch.currency}/${config.watch.asset}
+    [현재가]: ${this.price} ${config.watch.currency}
+    [시간]: ${this.priceTime.fromNow()}
+  `;
 
   this.bot.sendMessage(this.chatId, message);
 };
