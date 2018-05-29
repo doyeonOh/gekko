@@ -18,6 +18,9 @@ const wss = new WebSocketServer({ server: server });
 const cache = require('./state/cache');
 const ListManager = require('./state/listManager');
 
+// Authentication module. 
+var auth = require('http-auth');
+
 // broadcast function
 const broadcast = data => {
   if(_.isEmpty(data))
@@ -66,6 +69,13 @@ router.post('/api/getCandles', require(ROUTE('getCandles')));
 // wss.on('connection', ws => {
 //   ws.on('message', _.noop);
 // });
+var basic = auth.basic({
+  realm: "Restricted",
+  file: __dirname + "/.htpasswd"
+  });
+  
+// Enable auth.
+app.use(auth.koa(basic));
 
 app
   .use(cors())
