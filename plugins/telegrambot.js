@@ -11,12 +11,15 @@ const Actor = function() {
 
   this.advice = null;
   this.adviceTime = utc();
+  this.adviceTimeGmt = moment();
 
   this.trade = null;
   this.tradeTime = utc();
+  this.tradeTimeGmt = moment();
 
   this.price = 'Dont know yet :(';
   this.priceTime = utc();
+  this.priceTimeGmt = moment();
 
   this.commands = {
     '/start': 'emitStart',
@@ -45,6 +48,7 @@ Actor.prototype.processAdvice = function(advice) {
   if (advice.recommendation === 'soft') return;
   this.advice = advice.recommendation;
   this.adviceTime = utc();
+  this.adviceTimeGmt = moment();
   this.advicePrice = this.price;
 
   for(let subscriber of this.subscribers) {
@@ -56,6 +60,7 @@ Actor.prototype.processAdvice = function(advice) {
 Actor.prototype.processTrade = function(trade) {
   this.trade = trade;
   this.tradeTime = utc();
+  this.tradeTimeGmt = moment();
 
   for(let subscriber of this.subscribers) {
     this.emitTrade(subscriber);
@@ -72,29 +77,17 @@ Actor.prototype.emitTrade = function(chatId) {
       + tradeDate.getHours() + ':' + tradeDate.getMinutes() + ':' + tradeDate.getSeconds();
     
     message += `
-      ${config.watch.exchange}  ${config.watch.currency} ${config.watch.asset}
+      ${config.watch.exchange}  ${config.watch.currency}/${config.watch.asset}
       [전략]: ${config.tradingAdvisor.method}
       [액션]: ${trade.action.toUpperCase()}
       [거래가격]: ${trade.price}  ${config.watch.asset}
       ${trade.action === 'buy' ? '[변동성 조절]: ' + (trade.percent * 100) + '%' : '' }
       [거래 후 자산]: ${trade.portfolio.asset}  ${config.watch.asset}
-      [거래 후 통화]: ${trade.portfolio.currency}  ${config.watch.currency}
-      [잔액]: 약 ${Math.round(trade.portfolio.asset * trade.price + trade.portfolio.currency)})  ${config.watch.currency}
-      [수익률]: 약 ${Math.round(1 / trade.portfolio.balance * trade.balance * 100) / 100 * 100} %
-      [시간]: ${this.tradeTime.fromNow()}
+      [거래 후 통화]: ${trade.portfolio.currency * 100 / 100}  ${config.watch.currency}
+      [잔액]: 약 ${Math.round(trade.portfolio.asset * trade.price + trade.portfolio.currency)}  ${config.watch.currency}
+      [수익률]: 약 ${Math.round((1 / trade.portfolio.balance * trade.balance - 1) * 100) / 100 * 100} %
+      [시간]: ${this.tradeTimeGmt.fromNow()} / ${this.tradeTimeGmt.format('YYYY-MM-DD HH:mm:ss')}
     `;
-    // message += 
-       
-    //   config.watch.exchange + ' ' + config.watch.currency + '/' + config.watch.asset + '\n' +
-    //   '[전략]: ' + config.tradingAdvisor.method + '\n' +
-    //   '[액션]: ' + trade.action.toUpperCase() + '\n' +
-    //   '[거래가격]: ' + trade.price + ' ' + config.watch.asset  + '\n' +
-    //   (trade.action === 'buy' ? ('[변동성 조절]: ' + `${trade.percent * 100} %`)  + '\n' : '') + 
-    //   '[거래 후 자산]: ' + trade.portfolio.asset + ' ' + config.watch.asset + '\n' +
-    //   '[거래 후 통화]: ' + trade.portfolio.currency + ' ' + config.watch.currency + '\n' +
-    //   '[잔액]: 약' + Math.round(trade.portfolio.asset * trade.price + trade.portfolio.currency) + ' ' + config.watch.currency + '\n' +
-    //   '[수익률]: 약 ' + (Math.round(1 / trade.portfolio.balance * trade.balance * 100) / 100 * 100) + ' %' + '\n' +
-    //   '[시간]: ' + this.tradeTime.fromNow();
   } else {
     message += '없음'
   }
