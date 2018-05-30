@@ -33,7 +33,7 @@ const Actor = function() {
   this.rawCommands = _.keys(this.commands);
   this.chatId = null;
   this.subscribers = [];
-  this.bot = new telegram(telegrambot.token, { polling: true });
+  this.bot = new telegram(telegrambot.token, { polling: {timeout: 10, interval: 2000}});
   this.bot.onText(/(.+)/, this.verifyQuestion);
 };
 
@@ -75,19 +75,31 @@ Actor.prototype.emitTrade = function(chatId) {
     const tradeDate = new Date(trade.date);
     const dateString = tradeDate.getFullYear() + '-' + (tradeDate.getMonth() + 1) + '-' + tradeDate.getDate() + ' ' 
       + tradeDate.getHours() + ':' + tradeDate.getMinutes() + ':' + tradeDate.getSeconds();
+
+    const tradeEndAsset = trade.portfolio.asset;
+    const tradeEndCurrency = trade.portfolio.currency * 100 / 100;
+    const tradeEndBalance = Math.round(trade.portfolio.asset * trade.price + trade.portfolio.currency);
+    const profitRate = Math.round((1 / trade.portfolio.balance * trade.balance - 1) * 100) / 100 * 100;
+    const originBlanace = trade.portfolio.balance;
+
     
     message += `
-      ${config.watch.exchange}  ${config.watch.currency}/${config.watch.asset}
-      [전략]: ${config.tradingAdvisor.method}
-      [액션]: ${trade.action.toUpperCase()}
-      [거래가격]: ${trade.price}  ${config.watch.asset}
-      ${trade.action === 'buy' ? '[변동성 조절]: ' + (trade.percent * 100) + '%' : '' }
-      [거래 후 자산]: ${trade.portfolio.asset}  ${config.watch.asset}
-      [거래 후 통화]: ${trade.portfolio.currency * 100 / 100}  ${config.watch.currency}
-      [잔액]: 약 ${Math.round(trade.portfolio.asset * trade.price + trade.portfolio.currency)}  ${config.watch.currency}
-      [수익률]: 약 ${Math.round((1 / trade.portfolio.balance * trade.balance - 1) * 100) / 100 * 100} %
-      [시간]: ${this.tradeTimeGmt.fromNow()} / ${this.tradeTimeGmt.format('YYYY-MM-DD HH:mm:ss')}
+      ${config.watch.exchange}  ${config.watch.currency}/${config.watch.asset} ${config.tradingAdvisor.method}
+
+      ${trade.action.toUpperCase()}
+
+      [거래가격]:   ${trade.price}  ${config.watch.asset}
+      ${trade.action === 'buy' ? '[변동성 조절]:   ' + (trade.percent * 100) + '%' : '' }
+      
+      [거래 후 자산]:   ${tradeEndAsset}  ${config.watch.asset}
+      [거래 후 통화]:   ${tradeEndCurrency * 100 / 100}  ${config.watch.currency}
+
+      [현재잔액]:   약 ${tradeEndBalance}  ${config.watch.currency} (원금: ${originBalance} ${config.watch.currency})
+      [수익률]:   약 ${profitRate} % (차액: ${Math.round((tradeEndBalance - originBlanace) * 100) / 100} ${config.watch.currency})
+
+      [시간]:   ${this.tradeTimeGmt.format('YYYY-MM-DD HH:mm:ss')}
     `;
+    // ${this.tradeTimeGmt.fromNow()} / 
   } else {
     message += '없음'
   }
