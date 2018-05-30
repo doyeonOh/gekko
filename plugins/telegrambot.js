@@ -33,7 +33,7 @@ const Actor = function() {
   this.rawCommands = _.keys(this.commands);
   this.chatId = null;
   this.subscribers = [];
-  this.bot = new telegram(telegrambot.token, { polling: {timeout: 10, interval: 2000}});
+  this.bot = new telegram(telegrambot.token, { polling: true });
   this.bot.onText(/(.+)/, this.verifyQuestion);
 };
 
