@@ -80,7 +80,7 @@ Actor.prototype.emitTrade = function(chatId) {
     const tradeEndCurrency = trade.portfolio.currency * 100 / 100;
     const tradeEndBalance = Math.round(trade.portfolio.asset * trade.price + trade.portfolio.currency);
     const profitRate = Math.round((1 / trade.portfolio.balance * trade.balance - 1) * 100) / 100 * 100;
-    const originBlanace = trade.portfolio.balance;
+    const originBalance = trade.portfolio.balance;
 
     
     message += `
@@ -95,7 +95,7 @@ Actor.prototype.emitTrade = function(chatId) {
       [거래 후 통화]:   ${tradeEndCurrency * 100 / 100}  ${config.watch.currency}
 
       [현재잔액]:   약 ${tradeEndBalance}  ${config.watch.currency} (원금: ${originBalance} ${config.watch.currency})
-      [수익률]:   약 ${profitRate} % (차액: ${Math.round((tradeEndBalance - originBlanace) * 100) / 100} ${config.watch.currency})
+      [수익률]:   약 ${profitRate} % (차액: ${Math.round((tradeEndBalance - originBalance) * 100) / 100} ${config.watch.currency})
 
       [시간]:   ${this.tradeTimeGmt.format('YYYY-MM-DD HH:mm:ss')}
     `;
