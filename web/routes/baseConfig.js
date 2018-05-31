@@ -89,9 +89,4 @@ config.importer = {
   }
 }
 
-config.telegrambot = {
-  enabled: false,
-  token: '',
-};
-
 module.exports = config;
