@@ -24,4 +24,5 @@ EXPOSE 3000
 RUN chmod +x /usr/src/app/docker-entrypoint.sh
 ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
 
-CMD ["--config", "config.js", "--ui"]
+# , "--ui" 
+CMD ["--config", "config.js"]
