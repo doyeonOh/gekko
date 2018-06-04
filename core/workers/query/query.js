@@ -38,6 +38,7 @@ module.exports = function(_config, done) {
   db.run('PRAGMA journal_mode = ' + journalMode);
   db.configure('busyTimeout', 1500);
 
+  const localAdder = _config.queryOption.useUTC ? '' : ',\'localtime\'';
   let statement = `
   select 
     *,
@@ -45,12 +46,12 @@ module.exports = function(_config, done) {
     datetime(start, 'unixepoch', 'localtime') as localtime,
     1 - (abs(open - close ) / (high - low)) as noise,
     open as openToday,
-    strftime('%d', datetime(start, 'unixepoch', 'localtime')) as day
+    strftime('%d', datetime(start, 'unixepoch'${localAdder})) as day
   from candles_${_config.watch.currency}_${_config.watch.asset}
-  where strftime('%H%M', datetime(start, 'unixepoch', 'localtime')) = '${_config.queryOption.baseTime}'
-    and strftime('%Y%m%d', datetime(start, 'unixepoch', 'localtime')) 
-      between strftime('%Y%m%d', datetime('${_config.queryOption.baseDate}', 'localtime', '-20 day'))  
-      and strftime('%Y%m%d', datetime('${_config.queryOption.baseDate}', 'localtime'))
+  where strftime('%H%M', datetime(start, 'unixepoch'${localAdder})) = '${_config.queryOption.baseTime}'
+    and strftime('%Y%m%d', datetime(start, 'unixepoch'${localAdder})) 
+      between strftime('%Y%m%d', datetime('${_config.queryOption.baseDate}'${localAdder}, '-20 day'))  
+      and strftime('%Y%m%d', datetime('${_config.queryOption.baseDate}'${localAdder}))
 
 
 `;

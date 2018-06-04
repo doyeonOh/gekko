@@ -38,6 +38,8 @@ module.exports = function(_config, done) {
   db.run('PRAGMA journal_mode = ' + journalMode);
   db.configure('busyTimeout', 1500);
 
+  const localAdder = _config.queryOption.useUTC ? '' : ',\'localtime\'';
+  
   let statement = `
     
   select 
@@ -50,11 +52,11 @@ module.exports = function(_config, done) {
     select 
       *,
       datetime(start, 'unixepoch', 'localtime') as localtime,
-      case when strftime('%H%M', datetime(start, 'unixepoch', 'localtime')) between '${_config.queryOption.baseTime}' and '${_config.queryOption.baseTime}' then open else 0 end as dayOpen,
-      strftime('%Y-%m-%d', datetime(start, 'unixepoch', 'localtime')) as date
+      case when strftime('%H%M', datetime(start, 'unixepoch'${localAdder})) between '${_config.queryOption.baseTime}' and '${_config.queryOption.baseTime}' then open else 0 end as dayOpen,
+      strftime('%Y-%m-%d', datetime(start, 'unixepoch'${localAdder})) as date
     from candles_${_config.watch.currency}_${_config.watch.asset}
-    where strftime('%Y%m%d', datetime('${_config.queryOption.baseDate}', 'localtime', '-1 day')) = strftime('%Y%m%d', datetime(start, 'unixepoch', 'localtime'))
-      and strftime('%H%M', datetime(start, 'unixepoch', 'localtime')) between '${_config.queryOption.baseTime}' and '1200'
+    where strftime('%Y%m%d', datetime('${_config.queryOption.baseDate}'${localAdder})) = strftime('%Y%m%d', datetime(start, 'unixepoch'${localAdder}))
+      and strftime('%H%M', datetime(start, 'unixepoch'${localAdder})) between '${_config.queryOption.baseTime}' and '1200'
   ) a
   group by a.date
   
@@ -70,10 +72,10 @@ module.exports = function(_config, done) {
     select 
       *,
       datetime(start, 'unixepoch', 'localtime') as localtime,
-      case when strftime('%H%M', datetime(start, 'unixepoch', 'localtime')) between '${_config.queryOption.baseTime}' and '${_config.queryOption.baseTime}' then open else 0 end as dayOpen,
-      strftime('%Y-%m-%d', datetime(start, 'unixepoch', 'localtime')) as date
+      case when strftime('%H%M', datetime(start, 'unixepoch'${localAdder})) between '${_config.queryOption.baseTime}' and '${_config.queryOption.baseTime}' then open else 0 end as dayOpen,
+      strftime('%Y-%m-%d', datetime(start, 'unixepoch'${localAdder})) as date
     from candles_${_config.watch.currency}_${_config.watch.asset}
-    where strftime('%Y%m%d', datetime('${_config.queryOption.baseDate}', 'localtime', '-1 day')) = strftime('%Y%m%d', datetime(start, 'unixepoch', 'localtime'))
+    where strftime('%Y%m%d', datetime('${_config.queryOption.baseDate}'${localAdder})) = strftime('%Y%m%d', datetime(start, 'unixepoch'${localAdder}))
   ) a
   group by a.date
   
