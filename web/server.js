@@ -64,6 +64,7 @@ router.post('/api/startGekko', require(ROUTE('startGekko')));
 router.post('/api/killGekko', require(ROUTE('killGekko')));
 router.post('/api/getCandles', require(ROUTE('getCandles')));
 
+router.post('/api/query', require(ROUTE('query')));
 
 // incoming WS:
 // wss.on('connection', ws => {
