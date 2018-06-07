@@ -40,10 +40,10 @@ const Actor = function() {
   this.bot = new telegram(telegrambot.token, { polling: true });
   this.bot.onText(/(.+)/, this.verifyQuestion);
 
-  bot.on('polling_error', (err) => {
+  this.bot.on('polling_error', (err) => {
     log.error('polling_error');
   });
-  bot.on('webhook_error', (err) => {
+  this.bot.on('webhook_error', (err) => {
     log.error('webhook_error');
   });
 };
