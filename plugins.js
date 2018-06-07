@@ -60,7 +60,7 @@ var plugins = [
     modes: ['realtime'],
     dependencies: [{
       module: 'node-telegram-bot-api',
-      version: '0.30.0'
+      version: '0.24.0'
     }]
   },
   {
