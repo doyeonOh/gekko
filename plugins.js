@@ -190,6 +190,13 @@ var plugins = [
     slug: 'ifttt',
     async: false,
     modes: ['realtime']
+  },
+  {
+    name: 'Firebase',
+    description: 'save firebase storage',
+    slug: 'firebase',
+    async: false,
+    modes: ['realtime']
   }
 ];
 
