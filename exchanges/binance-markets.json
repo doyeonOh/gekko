@@ -56,6 +56,7 @@
     "CND",
     "CVC",
     "DASH",
+    "DATA",
     "DGD",
     "DLT",
     "EDO",
@@ -710,7 +711,7 @@
         "ADA"
       ],
       "minimalOrder": {
-        "amount": 0.01,
+        "amount": 0.1,
         "price": 0.00001,
         "order": 10
       }
@@ -1062,7 +1063,7 @@
         "BCN"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
@@ -1370,7 +1371,7 @@
         "CND"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
@@ -1449,6 +1450,28 @@
       "minimalOrder": {
         "amount": 0.001,
         "price": 0.00001,
+        "order": 0.01
+      }
+    },
+    {
+      "pair": [
+        "BTC",
+        "DATA"
+      ],
+      "minimalOrder": {
+        "amount": 1,
+        "price": 1e-8,
+        "order": 0.001
+      }
+    },
+    {
+      "pair": [
+        "ETH",
+        "DATA"
+      ],
+      "minimalOrder": {
+        "amount": 1,
+        "price": 1e-8,
         "order": 0.01
       }
     },
@@ -1590,7 +1613,7 @@
         "ENJ"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
@@ -2382,7 +2405,7 @@
         "NCASH"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
@@ -2543,11 +2566,22 @@
     },
     {
       "pair": [
+        "USDT",
+        "ONT"
+      ],
+      "minimalOrder": {
+        "amount": 0.001,
+        "price": 0.001,
+        "order": 10
+      }
+    },
+    {
+      "pair": [
         "BNB",
         "OST"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
@@ -2745,7 +2779,7 @@
         "QLC"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
@@ -2778,7 +2812,7 @@
         "QSP"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
@@ -2833,7 +2867,7 @@
         "RCN"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
@@ -2987,7 +3021,7 @@
         "RPX"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
@@ -3119,7 +3153,7 @@
         "STORM"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
@@ -3331,6 +3365,17 @@
         "amount": 1,
         "price": 1e-8,
         "order": 0.01
+      }
+    },
+    {
+      "pair": [
+        "USDT",
+        "TRX"
+      ],
+      "minimalOrder": {
+        "amount": 0.1,
+        "price": 0.00001,
+        "order": 10
       }
     },
     {
@@ -3768,7 +3813,7 @@
         "XRP"
       ],
       "minimalOrder": {
-        "amount": 0.01,
+        "amount": 0.1,
         "price": 0.00001,
         "order": 10
       }
@@ -3823,7 +3868,7 @@
         "YOYO"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
@@ -3911,7 +3956,7 @@
         "ZIL"
       ],
       "minimalOrder": {
-        "amount": 1,
+        "amount": 0.1,
         "price": 0.000001,
         "order": 1
       }
